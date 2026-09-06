@@ -1,4 +1,76 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Administrator | Starling Translations</title><link rel="stylesheet" href="admin.css"></head><body>
-<div id="login" class="login"><div class="box"><p class="eyebrow">STARLING TRANSLATIONS</p><h1>Administrator</h1><form id="loginForm"><input id="username" placeholder="Username" required autocomplete="username"><input id="password" type="password" placeholder="Password" required autocomplete="current-password"><button>LOGIN</button><p id="loginError" class="error"></p></form><a href="/">← Back to website</a></div></div>
-<div id="dashboard" hidden><header class="top"><a href="/">STARLING <span>TRANSLATIONS</span></a><div><a href="/">View Website</a><button id="logout">Logout</button></div></header><main><div class="dash-head"><div><p class="eyebrow">CONTENT MANAGEMENT</p><h1>Novel Library</h1></div><button id="add">+ ADD NOVEL</button></div><div id="list"></div></main></div>
-<div id="modal" class="modal" hidden><div class="modal-box"><div class="modal-head"><h2 id="modalTitle">Add Novel</h2><button id="close">×</button></div><form id="novelForm" enctype="multipart/form-data"><input type="hidden" id="novelId"><label>Novel Title<input name="title" id="title" required></label><label>Original Author<input name="author" id="author"></label><label>Genres <small>comma separated</small><input name="genres" id="genres" placeholder="Romance, Drama, Fantasy"></label><label>Status<select name="status" id="status"><option>Ongoing</option><option>Completed</option><option>Hiatus</option></select></label><label>Synopsis<textarea name="synopsis" id="synopsis" rows="6"></textarea></label><label>Patreon URL<input name="patreon_url" id="patreon" type="url" placeholder="https://www.patreon.com/..." required></label><label>Cover Image<input name="cover" id="cover" type="file" accept="image/jpeg,image/png,image/webp,image/gif"></label><p id="formError" class="error"></p><button class="save">SAVE NOVEL</button></form></div></div><script src="admin.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Administrator | Starling Translations</title>
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<div id="login" class="login">
+  <div class="box">
+    <p class="eyebrow">STARLING TRANSLATIONS</p>
+    <h1>Administrator</h1>
+    <p class="login-note">Sign in to manage your novel library.</p>
+    <form id="loginForm" autocomplete="on">
+      <input id="username" name="username" placeholder="Username" required autocomplete="username">
+      <input id="password" name="password" type="password" placeholder="Password" required autocomplete="current-password">
+      <button type="submit">LOGIN</button>
+      <p id="loginError" class="error"></p>
+    </form>
+    <a href="/">← Back to website</a>
+  </div>
+</div>
+
+<div id="dashboard" hidden>
+  <header class="top">
+    <a href="/" class="brand">STARLING <span>TRANSLATIONS</span></a>
+    <div class="top-actions">
+      <span id="welcome"></span>
+      <a href="/">View Website</a>
+      <button id="logout" type="button">Logout</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="dash-head">
+      <div>
+        <p class="eyebrow">CONTENT MANAGEMENT</p>
+        <h1>Novel Library</h1>
+      </div>
+      <button id="add" type="button">+ ADD NOVEL</button>
+    </div>
+    <div id="list"></div>
+  </main>
+</div>
+
+<div id="modal" class="modal" hidden>
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2 id="modalTitle">Add Novel</h2>
+      <button id="close" type="button">×</button>
+    </div>
+    <form id="novelForm" enctype="multipart/form-data">
+      <input type="hidden" id="novelId">
+      <label>Novel Title<input name="title" id="title" required></label>
+      <label>Original Author<input name="author" id="author"></label>
+      <label>Genres <small>comma separated</small><input name="genres" id="genres" placeholder="Romance, Drama, Fantasy"></label>
+      <label>Status
+        <select name="status" id="status">
+          <option>Ongoing</option>
+          <option>Completed</option>
+          <option>Hiatus</option>
+        </select>
+      </label>
+      <label>Synopsis<textarea name="synopsis" id="synopsis" rows="6"></textarea></label>
+      <label>Patreon URL<input name="patreon_url" id="patreon" type="url" placeholder="https://www.patreon.com/..." required></label>
+      <label>Cover Image<input name="cover" id="cover" type="file" accept="image/jpeg,image/png,image/webp,image/gif"></label>
+      <p class="hint">Maximum cover size: 2 MB.</p>
+      <p id="formError" class="error"></p>
+      <button class="save" type="submit">SAVE NOVEL</button>
+    </form>
+  </div>
+</div>
+<script src="admin.js"></script>
+</body>
+</html>
