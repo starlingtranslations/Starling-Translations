@@ -155,7 +155,7 @@ app.get('/api/auth/status', (req, res) => {
   const admin = currentAdmin(req);
   res.json({
     loggedIn: !!admin,
-    username: admin?.username || null
+    username: admin ? admin.username : null
   });
 });
 
