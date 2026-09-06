@@ -37,17 +37,15 @@
   <main>
     <section id="home" class="hero">
       <div class="hero-copy">
-        <p class="eyebrow">TRANSLATED STORIES · NEW WORLDS</p>
-        <h1 id="heroTitle" class="hero-title"><span>Stories worth</span><br><em>getting lost in.</em></h1>
+        <div class="hero-cover-stage">
+          <div id="featuredTrack" class="cover-track hero-cover-track" aria-label="Featured novels">
+            <div class="featured-loading">Loading stories…</div>
+          </div>
+        </div>
+
         <div class="hero-actions">
           <a class="gold-button" href="#novels">EXPLORE NOVELS <span>↓</span></a>
           <a class="quiet-button" href="https://www.patreon.com/15247010/join" target="_blank" rel="noopener noreferrer">BECOME A MEMBER ↗</a>
-        </div>
-      </div>
-
-      <div class="cover-marquee" aria-label="Featured novels">
-        <div id="featuredTrack" class="cover-track">
-          <div class="featured-loading">Loading stories…</div>
         </div>
       </div>
 
@@ -62,6 +60,19 @@
         </div>
         <p class="section-note">Choose a story. Enter another world.</p>
       </div>
+      <div class="library-tools">
+        <div class="search-box">
+          <input id="searchInput" type="search" placeholder="Search novels or authors..." autocomplete="off" aria-label="Search novels or authors">
+          <button id="searchBtn" type="button">SEARCH <span>⌕</span></button>
+        </div>
+        <div class="genre-area">
+          <span class="filter-label">GENRES</span>
+          <div id="genreButtons" class="genre-buttons">
+            <button class="genre-btn active" type="button" data-genre="ALL">ALL</button>
+          </div>
+        </div>
+      </div>
+      <p id="resultCount" class="result-count" aria-live="polite"></p>
       <div id="novelGrid" class="grid">
         <div class="loading"><span class="spinner"></span>Opening the library…</div>
       </div>
