@@ -1,124 +1,76 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#120b0d">
-  <meta name="description" content="Starling Translations — discover beautifully translated stories.">
-  <title>Starling Translations | Translated Stories</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Administrator | Starling Translations</title>
+<link rel="stylesheet" href="admin.css">
 </head>
 <body>
-  <div class="grain"></div>
+<div id="login" class="login">
+  <div class="box">
+    <p class="eyebrow">STARLING TRANSLATIONS</p>
+    <h1>Administrator</h1>
+    <p class="login-note">Sign in to manage your novel library.</p>
+    <form id="loginForm" autocomplete="on">
+      <input id="username" name="username" placeholder="Username" required autocomplete="username">
+      <input id="password" name="password" type="password" placeholder="Password" required autocomplete="current-password">
+      <button type="submit">LOGIN</button>
+      <p id="loginError" class="error"></p>
+    </form>
+    <a href="/">← Back to website</a>
+  </div>
+</div>
 
-  <header class="site-nav">
-    <a class="brand" href="#home">
-      <span class="brand-star">✦</span>
-      <span>STARLING <b>TRANSLATIONS</b></span>
-    </a>
-    <nav>
-      <a href="#home">HOME</a>
-      <a href="#novels">NOVELS</a>
-      <a href="#about">ABOUT</a>
-      <a href="/admin">ADMINISTRATOR</a>
-      <a class="nav-join" href="https://www.patreon.com/15247010/join" target="_blank" rel="noopener noreferrer">JOIN MONTHLY ↗</a>
-    </nav>
-    <a class="mobile-join" href="https://www.patreon.com/15247010/join" target="_blank" rel="noopener noreferrer">JOIN</a>
+<div id="dashboard" hidden>
+  <header class="top">
+    <a href="/" class="brand">STARLING <span>TRANSLATIONS</span></a>
+    <div class="top-actions">
+      <span id="welcome"></span>
+      <a href="/">View Website</a>
+      <button id="logout" type="button">Logout</button>
+    </div>
   </header>
 
   <main>
-    <section id="home" class="hero">
-      <div class="hero-left">
-        <div class="hero-kicker"><span></span> STARLING TRANSLATIONS <span></span></div>
-        <h1><span>Stories worth</span><em>getting lost in.</em></h1>
-        <p class="hero-copy">Romance, drama and fantasy stories, brought to English readers with care.</p>
-        <div class="hero-buttons">
-          <a class="btn-primary" href="#novels">EXPLORE THE LIBRARY <span>↓</span></a>
-          <a class="btn-outline" href="https://www.patreon.com/15247010/join" target="_blank" rel="noopener noreferrer">BECOME A MEMBER ↗</a>
-        </div>
-        <div class="hero-trust">
-          <span>✦ Curated stories</span>
-          <span>✦ New worlds</span>
-          <span>✦ Full translations on Patreon</span>
-        </div>
-      </div>
-
-      <div class="hero-right">
-        <div class="stage-label"><span>FEATURED STORIES</span><i id="slideCounter">01 / 01</i></div>
-        <div id="heroSlider" class="hero-slider">
-          <div class="slider-loading">Opening the collection…</div>
-        </div>
-        <div class="slider-controls">
-          <button id="prevSlide" type="button" aria-label="Previous novel">←</button>
-          <div id="sliderDots" class="slider-dots"></div>
-          <button id="nextSlide" type="button" aria-label="Next novel">→</button>
-        </div>
-      </div>
-    </section>
-
-    <section class="promise-strip">
-      <div><strong>01</strong><span>DISCOVER</span><small>Find your next obsession</small></div>
-      <div><strong>02</strong><span>EXPLORE</span><small>Browse by story and genre</small></div>
-      <div><strong>03</strong><span>CONTINUE</span><small>Read full translations on Patreon</small></div>
-    </section>
-
-    <section id="novels" class="collection">
-      <div class="section-top">
-        <div>
-          <p class="section-kicker">THE COLLECTION</p>
-          <h2>Find your next story.</h2>
-        </div>
-        <p class="section-intro">A growing library of translated worlds, waiting to be discovered.</p>
-      </div>
-
-      <div class="browse-tools">
-        <label class="search-box">
-          <span>⌕</span>
-          <input id="searchInput" type="search" placeholder="Search novels or authors..." autocomplete="off">
-        </label>
-        <div id="genreFilters" class="filters"></div>
-      </div>
-
-      <div id="novelGrid" class="novel-grid">
-        <div class="loading"><span></span>Loading the library…</div>
-      </div>
-      <div id="emptyResults" class="empty-results" hidden>
-        <div>✦</div>
-        <h3>No story found.</h3>
-        <p>Try another title, author or genre.</p>
-      </div>
-    </section>
-
-    <section class="reader-callout">
-      <div class="callout-art"><span>✦</span><i></i><b></b></div>
+    <div class="dash-head">
       <div>
-        <p class="section-kicker">FOR READERS WHO WANT MORE</p>
-        <h2>Some stories deserve<br><em>to stay with you.</em></h2>
-        <p>Join the Starling community on Patreon for access to the full translations and support the work behind every chapter.</p>
-        <a class="btn-primary" href="https://www.patreon.com/15247010/join" target="_blank" rel="noopener noreferrer">JOIN MONTHLY SUBSCRIPTION ↗</a>
+        <p class="eyebrow">CONTENT MANAGEMENT</p>
+        <h1>Novel Library</h1>
       </div>
-    </section>
-
-    <section id="about" class="about">
-      <div class="about-mark">✦</div>
-      <p class="section-kicker">ABOUT STARLING TRANSLATIONS</p>
-      <h2>Across languages.<br><em>Into your world.</em></h2>
-      <p>Starling Translations is a home for readers who love discovering stories beyond their own language. Explore the collection, find a world that catches your attention, and continue the journey on Patreon.</p>
-    </section>
-  </main>
-
-  <footer>
-    <div class="footer-main"><span>✦</span> STARLING TRANSLATIONS</div>
-    <div class="footer-links">
-      <a href="#home">HOME</a><a href="#novels">NOVELS</a><a href="#about">ABOUT</a>
-      <a href="https://www.patreon.com/15247010/join" target="_blank" rel="noopener noreferrer">PATREON ↗</a>
+      <button id="add" type="button">+ ADD NOVEL</button>
     </div>
-    <p>© 2026 Starling Translations · Stories beyond language.</p>
-  </footer>
+    <div id="list"></div>
+  </main>
+</div>
 
-  <script src="app.js"></script>
+<div id="modal" class="modal" hidden>
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2 id="modalTitle">Add Novel</h2>
+      <button id="close" type="button">×</button>
+    </div>
+    <form id="novelForm" enctype="multipart/form-data">
+      <input type="hidden" id="novelId">
+      <label>Novel Title<input name="title" id="title" required></label>
+      <label>Original Author<input name="author" id="author"></label>
+      <label>Genres <small>comma separated</small><input name="genres" id="genres" placeholder="Romance, Drama, Fantasy"></label>
+      <label>Status
+        <select name="status" id="status">
+          <option>Ongoing</option>
+          <option>Completed</option>
+          <option>Hiatus</option>
+        </select>
+      </label>
+      <label>Synopsis<textarea name="synopsis" id="synopsis" rows="6"></textarea></label>
+      <label>Patreon URL<input name="patreon_url" id="patreon" type="url" placeholder="https://www.patreon.com/..." required></label>
+      <label>Cover Image<input name="cover" id="cover" type="file" accept="image/jpeg,image/png,image/webp,image/gif"></label>
+      <p class="hint">Maximum cover size: 2 MB.</p>
+      <p id="formError" class="error"></p>
+      <button class="save" type="submit">SAVE NOVEL</button>
+    </form>
+  </div>
+</div>
+<script src="admin.js"></script>
 </body>
 </html>
