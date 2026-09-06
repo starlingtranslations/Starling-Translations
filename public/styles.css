@@ -561,3 +561,67 @@ footer{
   .cover-track.ready{min-height:360px}
   .hero-rule{padding:0 18px}
 }
+
+
+/* V8 review corrections */
+.hero-copy{position:relative}
+.hero-copy:before{
+  content:"STARLING TRANSLATIONS · CHINESE TO ENGLISH";
+  display:block;
+  margin:0 0 18px;
+  color:#b98a4a;
+  font:500 13px/1.4 var(--serif);
+  letter-spacing:1.5px;
+}
+.hero-cover-label span{
+  font-size:13px;
+  letter-spacing:3.5px;
+  color:#d0b08a;
+}
+.hero-cover-label b{font-size:18px}
+.hero-actions{gap:18px;align-items:center}
+.hero .gold-button,
+.hero .quiet-button{
+  min-height:56px;
+  padding:16px 26px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background:#8c172b;
+  color:#fff7f0;
+  border:1px solid #b02a43;
+  text-decoration:none;
+  font:700 11px var(--sans);
+  letter-spacing:1.8px;
+  box-shadow:0 12px 30px rgba(0,0,0,.28);
+  transition:.3s ease;
+}
+.hero .quiet-button:hover,
+.hero .gold-button:hover{
+  background:#a31b34;
+  border-color:#c13a50;
+  transform:translateY(-3px);
+  box-shadow:0 18px 38px rgba(0,0,0,.38);
+}
+.hero .quiet-button{border-color:#b02a43}
+.hero-cover-note{display:none!important}
+.about-section{
+  min-height:420px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:100px 24px;
+  background:#070707!important;
+  border-top:1px solid rgba(154,24,48,.22);
+  border-bottom:1px solid rgba(154,24,48,.22);
+  text-align:center;
+}
+.about-inner{width:min(1100px,100%);margin:0 auto}
+.about-eyebrow{
+  margin:0;
+  color:#f5eee9;
+  font:600 clamp(34px,5vw,68px)/1.05 var(--serif);
+  letter-spacing:1px;
+  text-transform:uppercase;
+  text-shadow:0 0 30px rgba(154,24,48,.28);
+}
