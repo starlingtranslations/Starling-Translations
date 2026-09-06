@@ -1,169 +1,200 @@
-const state = {
-  novels: [],
-  filtered: [],
-  genre: 'ALL',
-  query: '',
-  slide: 0,
-  timer: null
-};
+let allNovels = [];
+let selectedGenre = 'ALL';
+let coverTimer = null;
 
-const $ = id => document.getElementById(id);
+async function loadNovels(){
+  const grid = document.getElementById('novelGrid');
+  const track = document.getElementById('featuredTrack');
 
-function esc(value = '') {
-  return String(value).replace(/[&<>'"]/g, c => ({
-    '&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'
-  }[c]));
+  try{
+    const res = await fetch('/api/novels', {cache:'no-store'});
+    if(!res.ok) throw new Error('Unable to load novels');
+
+    allNovels = await res.json();
+
+    buildGenreButtons();
+    setupSearch();
+    showFeaturedCovers();
+    renderNovels();
+  }catch(error){
+    grid.innerHTML = '<div class="loading empty-state"><div class="empty-star">!</div><h3>The library is resting.</h3><p>Please refresh the page and try again.</p></div>';
+    track.innerHTML = '<div class="featured-empty">Please refresh to open the collection.</div>';
+  }
 }
 
-function getGenres(novel) {
-  return Array.isArray(novel.genres) ? novel.genres.filter(Boolean) : [];
-}
+function buildGenreButtons(){
+  const box = document.getElementById('genreButtons');
 
-function matches(novel) {
-  const q = state.query.trim().toLowerCase();
-  const text = `${novel.title || ''} ${novel.author || ''} ${getGenres(novel).join(' ')}`.toLowerCase();
-  const genreOk = state.genre === 'ALL' || getGenres(novel).some(g => g.toLowerCase() === state.genre.toLowerCase());
-  return genreOk && (!q || text.includes(q));
-}
+  const genres = [...new Set(
+    allNovels
+      .flatMap(n => Array.isArray(n.genres) ? n.genres : [])
+      .map(g => String(g).trim())
+      .filter(Boolean)
+  )].sort((a,b) => a.localeCompare(b));
 
-function renderFilters() {
-  const allGenres = [...new Set(state.novels.flatMap(getGenres))].sort((a,b)=>a.localeCompare(b));
-  $('genreFilters').innerHTML = ['ALL', ...allGenres].map(g =>
-    `<button type="button" class="filter ${state.genre.toLowerCase() === g.toLowerCase() ? 'active' : ''}" data-genre="${esc(g)}">${esc(g)}</button>`
-  ).join('');
-  $('genreFilters').querySelectorAll('.filter').forEach(btn => {
-    btn.addEventListener('click', () => {
-      state.genre = btn.dataset.genre;
-      renderFilters();
-      renderGrid();
+  box.innerHTML = `
+    <button class="genre-btn active" type="button" data-genre="ALL">ALL</button>
+    ${genres.map(g => `
+      <button class="genre-btn" type="button" data-genre="${esc(g)}">${esc(g)}</button>
+    `).join('')}
+  `;
+
+  box.querySelectorAll('.genre-btn').forEach(button => {
+    button.addEventListener('click', () => {
+      selectedGenre = button.dataset.genre;
+      box.querySelectorAll('.genre-btn').forEach(b => b.classList.remove('active'));
+      button.classList.add('active');
+      renderNovels();
     });
   });
 }
 
-function renderGrid() {
-  state.filtered = state.novels.filter(matches);
-  const grid = $('novelGrid');
-  const empty = $('emptyResults');
+function setupSearch(){
+  const input = document.getElementById('searchInput');
+  const button = document.getElementById('searchBtn');
 
-  if (!state.filtered.length) {
-    grid.innerHTML = '';
-    empty.hidden = false;
+  button.addEventListener('click', renderNovels);
+
+  input.addEventListener('input', renderNovels);
+
+  input.addEventListener('keydown', event => {
+    if(event.key === 'Enter'){
+      event.preventDefault();
+      renderNovels();
+    }
+  });
+}
+
+function renderNovels(){
+  const grid = document.getElementById('novelGrid');
+  const count = document.getElementById('resultCount');
+  const input = document.getElementById('searchInput');
+  const query = input ? input.value.trim().toLowerCase() : '';
+
+  const filtered = allNovels.filter(n => {
+    const genres = Array.isArray(n.genres) ? n.genres : [];
+
+    const genreMatch =
+      selectedGenre === 'ALL' ||
+      genres.some(g => String(g).toLowerCase() === selectedGenre.toLowerCase());
+
+    const searchable = [
+      n.title || '',
+      n.author || '',
+      n.synopsis || '',
+      ...genres
+    ].join(' ').toLowerCase();
+
+    return genreMatch && (!query || searchable.includes(query));
+  });
+
+  count.textContent = `${filtered.length} ${filtered.length === 1 ? 'NOVEL' : 'NOVELS'} FOUND`;
+
+  if(!filtered.length){
+    grid.innerHTML = `
+      <div class="loading empty-state">
+        <div class="empty-star">✦</div>
+        <h3>No novels found.</h3>
+        <p>Try another title, author or genre.</p>
+      </div>`;
     return;
   }
-  empty.hidden = true;
 
-  grid.innerHTML = state.filtered.map((n, i) => {
-    const genres = getGenres(n);
-    return `
-      <article class="novel-card" style="--delay:${i * 65}ms">
-        <div class="novel-cover-wrap">
-          ${n.cover
-            ? `<img class="novel-cover" src="${n.cover}" alt="${esc(n.title)} cover" loading="lazy">`
-            : `<div class="novel-cover-placeholder"><span>✦</span></div>`}
-          <div class="cover-glow"></div>
-          <span class="status-pill">${esc(n.status || 'ONGOING')}</span>
+  grid.innerHTML = filtered.map((n,index) => {
+    const genres = Array.isArray(n.genres) ? n.genres : [];
+
+    return `<article class="card" style="--delay:${index * 70}ms">
+      <div class="cover-wrap">
+        ${n.cover
+          ? `<img class="cover" src="${n.cover}" alt="${esc(n.title)} cover" loading="lazy">`
+          : '<div class="placeholder"><span>✦</span></div>'}
+        <div class="cover-shine"></div>
+        <div class="cover-badge">STARLING</div>
+      </div>
+
+      <div class="card-body">
+        <div class="card-meta">
+          <span>${esc(n.status || 'ONGOING')}</span>
+          <i>✦</i>
         </div>
-        <div class="novel-info">
-          <div class="novel-type">${genres.length ? esc(genres[0]) : 'TRANSLATED NOVEL'} <i>✦</i></div>
-          <h3>${esc(n.title)}</h3>
-          <p class="novel-author">${esc(n.author || 'Original Author')}</p>
-          <div class="genre-list">${genres.slice(0,3).map(g=>`<span>${esc(g)}</span>`).join('')}</div>
-          <p class="novel-synopsis">${esc(n.synopsis || 'Discover this translated story and enter a new world.')}</p>
-          <a class="check-btn" href="${esc(n.patreon_url || '#')}" target="_blank" rel="noopener noreferrer">
-            <span>CHECK IT OUT</span><b>↗</b>
-          </a>
+
+        <h3>${esc(n.title)}</h3>
+        <div class="author">${esc(n.author || 'Original Author')}</div>
+
+        <div class="tags">
+          ${genres.map(g => `<span class="tag">${esc(g)}</span>`).join('')}
         </div>
-      </article>
-    `;
+
+        <p class="desc">${esc(n.synopsis || 'A translated story waiting to be discovered.')}</p>
+
+        <a class="check" href="${esc(n.patreon_url || '#')}" target="_blank" rel="noopener noreferrer">
+          <span>CHECK IT OUT</span><b>↗</b>
+        </a>
+      </div>
+    </article>`;
   }).join('');
 
   requestAnimationFrame(() => {
-    grid.querySelectorAll('.novel-card').forEach(card => card.classList.add('show'));
+    grid.querySelectorAll('.card').forEach(card => card.classList.add('is-visible'));
   });
 }
 
-function renderSlider() {
-  const slider = $('heroSlider');
-  const novels = state.novels.filter(n => n.cover);
+function showFeaturedCovers(){
+  const track = document.getElementById('featuredTrack');
 
-  if (!novels.length) {
-    slider.innerHTML = `<div class="slider-fallback"><span>✦</span><p>Your next story is waiting.</p></div>`;
-    $('sliderDots').innerHTML = '';
-    $('slideCounter').textContent = '01 / 01';
+  if(coverTimer){
+    clearInterval(coverTimer);
+    coverTimer = null;
+  }
+
+  const featured = allNovels.filter(n => n.cover);
+
+  if(!featured.length){
+    track.innerHTML = `
+      <div class="featured-cover no-cover active">
+        <span class="no-cover-mark">✦</span>
+        <span>Your next story is waiting here.</span>
+      </div>`;
+    track.classList.add('ready');
     return;
   }
 
-  if (state.slide >= novels.length) state.slide = 0;
+  // Random order each time the homepage is opened.
+  const shuffled = [...featured].sort(() => Math.random() - 0.5);
 
-  slider.innerHTML = novels.map((n, i) => `
-    <a class="hero-slide ${i === state.slide ? 'active' : ''}" href="${esc(n.patreon_url || '#')}" target="_blank" rel="noopener noreferrer" aria-label="Open ${esc(n.title)}">
+  track.innerHTML = shuffled.map((n,index) => `
+    <a class="featured-cover${index === 0 ? ' active' : ''}"
+       href="${esc(n.patreon_url || '#')}"
+       target="_blank"
+       rel="noopener noreferrer"
+       title="${esc(n.title)}">
       <img src="${n.cover}" alt="${esc(n.title)} cover">
-      <div class="slide-overlay"></div>
-      <div class="slide-info">
-        <span>${esc(n.status || 'ONGOING')}</span>
-        <h3>${esc(n.title)}</h3>
-        <p>${esc(n.author || 'Original Author')}</p>
-      </div>
+      <span>${esc(n.title)}</span>
     </a>
   `).join('');
 
-  $('sliderDots').innerHTML = novels.map((_,i)=>
-    `<button type="button" class="dot ${i===state.slide?'active':''}" data-index="${i}" aria-label="Show story ${i+1}"></button>`
-  ).join('');
+  const slides = [...track.querySelectorAll('.featured-cover')];
+  let current = 0;
 
-  $('sliderDots').querySelectorAll('.dot').forEach(dot => {
-    dot.addEventListener('click', () => {
-      state.slide = Number(dot.dataset.index);
-      renderSlider();
-      restartSlider();
-    });
-  });
-
-  $('slideCounter').textContent =
-    `${String(state.slide + 1).padStart(2,'0')} / ${String(novels.length).padStart(2,'0')}`;
-}
-
-function nextSlide() {
-  const count = state.novels.filter(n => n.cover).length;
-  if (count < 2) return;
-  state.slide = (state.slide + 1) % count;
-  renderSlider();
-}
-
-function prevSlide() {
-  const count = state.novels.filter(n => n.cover).length;
-  if (count < 2) return;
-  state.slide = (state.slide - 1 + count) % count;
-  renderSlider();
-}
-
-function restartSlider() {
-  clearInterval(state.timer);
-  const count = state.novels.filter(n => n.cover).length;
-  if (count > 1) state.timer = setInterval(nextSlide, 3800);
-}
-
-$('nextSlide').addEventListener('click', () => { nextSlide(); restartSlider(); });
-$('prevSlide').addEventListener('click', () => { prevSlide(); restartSlider(); });
-
-$('searchInput').addEventListener('input', e => {
-  state.query = e.target.value;
-  renderGrid();
-});
-
-async function init() {
-  try {
-    const response = await fetch('/api/novels', { cache: 'no-store' });
-    if (!response.ok) throw new Error('Request failed');
-    state.novels = await response.json();
-    renderSlider();
-    renderFilters();
-    renderGrid();
-    restartSlider();
-  } catch (error) {
-    $('heroSlider').innerHTML = `<div class="slider-fallback"><span>!</span><p>Unable to open the collection right now.</p></div>`;
-    $('novelGrid').innerHTML = `<div class="loading">Please refresh the page to try again.</div>`;
+  if(slides.length > 1){
+    coverTimer = setInterval(() => {
+      slides[current].classList.remove('active');
+      current = (current + 1) % slides.length;
+      slides[current].classList.add('active');
+    }, 2000);
   }
+
+  track.classList.add('ready');
 }
 
-init();
+function esc(value=''){
+  return String(value).replace(/[&<>'"]/g, character => ({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    "'":'&#39;',
+    '"':'&quot;'
+  }[character]));
+}
+
+loadNovels();
