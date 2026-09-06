@@ -1,0 +1,19 @@
+{
+  "name": "starling-translations-cms",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Production-ready novel showcase CMS for Starling Translations",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^5.1.0",
+    "multer": "^2.0.2",
+    "pg": "^8.16.3"
+  }
+}
