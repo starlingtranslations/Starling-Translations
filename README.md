@@ -49,3 +49,9 @@ Covers are stored as image data inside PostgreSQL. This keeps the application se
 ## Security
 
 Do not commit `.env` or production credentials to GitHub. Use Render's Environment settings for secrets. Use a strong admin password and a long random session secret.
+
+
+## Authentication note
+The administrator login uses a signed, HttpOnly cookie based on `SESSION_SECRET`.
+No login-session table is required in PostgreSQL. Keep the existing `SESSION_SECRET`
+unchanged in Render when redeploying this version.
