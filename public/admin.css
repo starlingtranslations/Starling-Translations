@@ -6,3 +6,4 @@
 .top-actions a{color:inherit;text-decoration:none}
 #welcome{color:#a9a39a;font-size:.9rem}
 .hint{color:#8d877f;font-size:.8rem;margin-top:-8px}
+#dashboard[hidden], #login[hidden], #modal[hidden] { display: none !important; }
