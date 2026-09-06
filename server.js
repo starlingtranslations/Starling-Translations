@@ -35,6 +35,13 @@ const upload = multer({
 app.set('trust proxy', 1);
 app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true }));
+// Keep /admin ahead of the public static-file middleware.
+// express.static serves public/index.html for /admin by default,
+// which would otherwise hide the admin login page.
+app.get('/admin', (_, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 const AUTH_COOKIE = 'starling_admin';
@@ -155,7 +162,7 @@ app.get('/api/auth/status', (req, res) => {
   const admin = currentAdmin(req);
   res.json({
     loggedIn: !!admin,
-    username: admin ? admin.username : null
+    username: admin?.username || null
   });
 });
 
@@ -280,10 +287,6 @@ app.delete('/api/novels/:id', auth, async (req, res) => {
     console.error(error);
     res.status(500).json({ error: 'Unable to delete novel.' });
   }
-});
-
-app.get('/admin', (_, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
 initDb()
