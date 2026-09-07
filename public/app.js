@@ -176,6 +176,11 @@ function renderNovels(){
         </div>
 
         <p class="desc">${esc(n.synopsis || 'A translated story waiting to be discovered.')}</p>
+        ${n.synopsis ? `
+        <button class="synopsis-toggle" type="button" aria-expanded="false">
+          <span>READ FULL SYNOPSIS</span><b>↓</b>
+        </button>
+        <div class="synopsis-full" hidden>${esc(n.synopsis)}</div>` : ''}
 
         <a class="check" href="${esc(n.patreon_url || '#')}" target="_blank" rel="noopener noreferrer">
           <span>CHECK IT OUT</span><b>↗</b>
@@ -184,6 +189,21 @@ function renderNovels(){
     </article>`;
   }).join('');
 
+
+  grid.querySelectorAll('.synopsis-toggle').forEach(button => {
+    button.addEventListener('click', () => {
+      const full = button.nextElementSibling;
+      const expanded = button.getAttribute('aria-expanded') === 'true';
+
+      button.setAttribute('aria-expanded', String(!expanded));
+      full.hidden = expanded;
+      button.querySelector('span').textContent = expanded
+        ? 'READ FULL SYNOPSIS'
+        : 'HIDE SYNOPSIS';
+      button.querySelector('b').textContent = expanded ? '↓' : '↑';
+      button.classList.toggle('open', !expanded);
+    });
+  });
 
   requestAnimationFrame(() => {
     grid.querySelectorAll('.card').forEach(card => card.classList.add('is-visible'));
