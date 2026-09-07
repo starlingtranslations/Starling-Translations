@@ -21,6 +21,7 @@ function setupMobileMenu(){
 
 let allNovels = [];
 let selectedGenre = 'ALL';
+let selectedStatus = 'ALL';
 let coverTimer = null;
 
 async function loadNovels(){
@@ -34,6 +35,7 @@ async function loadNovels(){
     allNovels = await res.json();
 
     buildGenreButtons();
+    buildStatusButtons();
     setupSearch();
     showFeaturedCovers();
     renderNovels();
@@ -63,6 +65,32 @@ function buildGenreButtons(){
   box.querySelectorAll('.genre-btn').forEach(button => {
     button.addEventListener('click', () => {
       selectedGenre = button.dataset.genre;
+      box.querySelectorAll('.genre-btn').forEach(b => b.classList.remove('active'));
+      button.classList.add('active');
+      renderNovels();
+    });
+  });
+}
+
+function buildStatusButtons(){
+  const box = document.getElementById('statusButtons');
+  const statuses = [...new Set(
+    allNovels.map(n => String(n.status || '').trim()).filter(Boolean)
+  )].sort((a,b) => a.localeCompare(b));
+
+  const preferred = ['Ongoing','Completed','Hiatus'];
+  const ordered = [...preferred, ...statuses.filter(status => !preferred.some(x => x.toLowerCase() === status.toLowerCase()))];
+
+  box.innerHTML = `
+    <button class="genre-btn active" type="button" data-status="ALL">ALL</button>
+    ${ordered.map(status => `
+      <button class="genre-btn" type="button" data-status="${esc(status)}">${esc(status)}</button>
+    `).join('')}
+  `;
+
+  box.querySelectorAll('.genre-btn').forEach(button => {
+    button.addEventListener('click', () => {
+      selectedStatus = button.dataset.status;
       box.querySelectorAll('.genre-btn').forEach(b => b.classList.remove('active'));
       button.classList.add('active');
       renderNovels();
@@ -106,7 +134,9 @@ function renderNovels(){
       ...genres
     ].join(' ').toLowerCase();
 
-    return genreMatch && (!query || searchable.includes(query));
+    const statusMatch = selectedStatus === 'ALL' || String(n.status || '').toLowerCase() === selectedStatus.toLowerCase();
+
+    return genreMatch && statusMatch && (!query || searchable.includes(query));
   });
 
   count.textContent = `${filtered.length} ${filtered.length === 1 ? 'NOVEL' : 'NOVELS'} FOUND`;
@@ -130,7 +160,7 @@ function renderNovels(){
           ? `<img class="cover" src="${n.cover}" alt="${esc(n.title)} cover" loading="lazy">`
           : '<div class="placeholder"><span>✦</span></div>'}
         <div class="cover-shine"></div>
-        <div class="cover-badge">STARLING</div>
+        <div class="cover-badge">${esc(n.status || 'ONGOING')}</div>
       </div>
 
       <div class="card-body">
@@ -148,22 +178,6 @@ function renderNovels(){
 
         <p class="desc">${esc(n.synopsis || 'A translated story waiting to be discovered.')}</p>
 
-        <div class="chapter-section">
-          <button class="chapter-toggle" type="button" aria-expanded="false">
-            <span>CHAPTERS</span><b>${(n.chapters || []).length}</b><i>⌄</i>
-          </button>
-          <div class="chapter-links" hidden>
-            ${(n.chapters || []).length
-              ? (n.chapters || []).map(ch => `
-                <a class="chapter-link" href="${esc(ch.patreon_url || '#')}" target="_blank" rel="noopener noreferrer">
-                  <span>CHAPTER ${esc(ch.chapter_number)}</span>
-                  <strong>${esc(ch.title || `Chapter ${ch.chapter_number}`)}</strong>
-                  <b>↗</b>
-                </a>`).join('')
-              : '<p class="no-chapters">Chapters will be added soon.</p>'}
-          </div>
-        </div>
-
         <a class="check" href="${esc(n.patreon_url || '#')}" target="_blank" rel="noopener noreferrer">
           <span>CHECK IT OUT</span><b>↗</b>
         </a>
@@ -171,15 +185,6 @@ function renderNovels(){
     </article>`;
   }).join('');
 
-  grid.querySelectorAll('.chapter-toggle').forEach(button => {
-    button.addEventListener('click', () => {
-      const links = button.nextElementSibling;
-      const open = !links.hidden;
-      links.hidden = open;
-      button.setAttribute('aria-expanded', String(!open));
-      button.classList.toggle('open', !open);
-    });
-  });
 
   requestAnimationFrame(() => {
     grid.querySelectorAll('.card').forEach(card => card.classList.add('is-visible'));
@@ -216,7 +221,8 @@ function showFeaturedCovers(){
        rel="noopener noreferrer"
        title="${esc(n.title)}">
       <img src="${n.cover}" alt="${esc(n.title)} cover">
-      <span>${esc(n.title)}</span>
+      <span class="featured-status">${esc(n.status || 'ONGOING')}</span>
+      <span class="featured-title">${esc(n.title)}</span>
     </a>
   `).join('');
 
