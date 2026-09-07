@@ -639,106 +639,43 @@ footer{
 
 /* HERO SCALE UPDATE: optimized for Chrome at 125% zoom */
 @media(min-width:901px){
-  /* LARGE CINEMATIC HERO: fills the full viewport beneath the navigation */
   .hero{
-    min-height:calc(100vh - 82px);
-    height:calc(100vh - 82px);
+    min-height:calc(100vh - 70px);
     padding:0;
   }
   .hero-inner{
-    width:100%;
-    height:100%;
-    margin:0;
-    display:grid;
-    grid-template-columns:48% 52%;
-    gap:0;
-    align-items:stretch;
-    padding:0;
+    width:min(1500px,calc(100% - 90px));
+    grid-template-columns:1fr 1fr;
+    gap:54px;
+    padding:42px 0 34px;
   }
-  .hero-copy{
-    max-width:760px;
-    width:100%;
-    align-self:center;
-    padding:40px clamp(42px,5vw,92px) 50px;
-  }
+  .hero-copy{max-width:760px}
   .hero h1{
-    margin:20px 0 24px;
-    font-size:clamp(76px,7.8vw,138px);
-    line-height:.84;
+    margin:20px 0 20px;
+    font-size:clamp(70px,7.4vw,126px);
+    line-height:.86;
     letter-spacing:-5px;
   }
-  .hero-sub{font-size:16px;margin-bottom:36px}
+  .hero-sub{font-size:15px;margin-bottom:32px}
   .hero .gold-button,.hero .quiet-button{
-    min-height:66px;
-    padding:19px 34px;
+    min-height:62px;
+    padding:18px 30px;
     font-size:12px;
   }
   .hero-cover-side{
-    position:relative;
-    width:100%;
-    height:100%;
-    min-height:0;
-    justify-self:stretch;
-    text-align:center;
-    display:flex;
-    flex-direction:column;
-    align-items:stretch;
-    justify-content:flex-start;
+    width:min(500px,100%);
   }
   .hero-cover-label{
-    position:absolute;
-    z-index:5;
-    top:36px;
-    left:0;
-    right:0;
-    padding:0 clamp(28px,4vw,70px);
-    margin:0;
-    font-size:14px;
+    margin-bottom:12px;
   }
-  .hero-cover-label span{font-size:15px;letter-spacing:4px}
-  .hero-cover-label b{font-size:21px}
-  .hero-cover-stage{
-    width:100%;
-    height:100%;
-    min-height:0;
-    display:block;
+  .hero-cover-label span{font-size:14px;letter-spacing:3.8px}
+  .hero-cover-label b{font-size:20px}
+  .hero-cover-stage{min-height:560px}
+  .cover-track{
+    width:min(390px,100%);
+    height:560px;
   }
-  .cover-track,
-  .cover-track.ready{
-    width:100%;
-    height:100%;
-    min-height:0;
-    margin:0;
-  }
-  .featured-cover{
-    border:0;
-    box-shadow:none;
-    border-left:1px solid rgba(202,154,91,.20);
-  }
-  .featured-cover:before{
-    content:"";
-    position:absolute;
-    inset:-18px;
-    z-index:-1;
-    background-image:var(--cover-bg);
-    background-position:center;
-    background-size:cover;
-    filter:blur(26px) saturate(.9);
-    opacity:.28;
-    transform:scale(1.08);
-  }
-  .featured-cover:after{
-    background:linear-gradient(90deg,rgba(7,7,7,.28),transparent 32%,rgba(7,7,7,.08)),linear-gradient(to bottom,rgba(7,7,7,.08),transparent 28%,rgba(7,7,7,.42));
-  }
-  .featured-cover img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    object-position:center;
-  }
-  .featured-cover .featured-title{
-    display:none;
-  }
+  .cover-track.ready{min-height:560px}
 }
 
 /* Never place status text over a cover image. Status remains in the novel information area and filters. */
@@ -892,5 +829,63 @@ footer{
     max-width:620px;
     font-size:16px;
     line-height:1.85;
+  }
+}
+
+/* FINAL HERO COVER SIZE - keep hero design unchanged, make animated cover smaller */
+@media (min-width: 901px) {
+  .hero-cover-side {
+    width: min(460px, 100%);
+  }
+
+  .hero-cover-stage {
+    min-height: 540px;
+  }
+
+  .cover-track {
+    width: min(340px, 86%);
+    height: 500px;
+  }
+
+  .cover-track.ready {
+    min-height: 500px;
+  }
+}
+
+@media (max-width: 900px) {
+  .hero-cover-side {
+    width: min(320px, 82vw);
+  }
+
+  .hero-cover-stage {
+    min-height: 420px;
+  }
+
+  .cover-track {
+    width: min(270px, 70vw);
+    height: 410px;
+  }
+
+  .cover-track.ready {
+    min-height: 410px;
+  }
+}
+
+@media (max-width: 650px) {
+  .hero-cover-side {
+    width: min(285px, 78vw);
+  }
+
+  .hero-cover-stage {
+    min-height: 390px;
+  }
+
+  .cover-track {
+    width: min(250px, 68vw);
+    height: 360px;
+  }
+
+  .cover-track.ready {
+    min-height: 360px;
   }
 }
