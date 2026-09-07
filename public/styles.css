@@ -755,3 +755,24 @@ footer{
   .desc{font-size:11px}
   .check{font-size:9px;padding:11px 9px}
 }
+
+/* Chapter links */
+.chapter-section{margin:18px 0 14px;border-top:1px solid rgba(255,255,255,.08);border-bottom:1px solid rgba(255,255,255,.08)}
+.chapter-toggle{width:100%;display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:10px;padding:12px 0;background:none;border:0;color:#d8b18b;cursor:pointer;text-align:left;font-size:11px;font-weight:700;letter-spacing:2px}
+.chapter-toggle b{min-width:22px;height:22px;display:grid;place-items:center;border:1px solid rgba(216,177,139,.35);font-size:10px;color:#f1e8df}
+.chapter-toggle i{font-style:normal;color:#a23a4d;font-size:18px;transition:transform .2s ease}
+.chapter-toggle.open i{transform:rotate(180deg)}
+.chapter-links{padding:0 0 8px}
+.chapter-link{display:grid;grid-template-columns:72px 1fr 20px;gap:9px;align-items:center;padding:10px 0;border-top:1px solid rgba(255,255,255,.05);color:inherit;text-decoration:none}
+.chapter-link span{font-size:8px;letter-spacing:1.2px;color:#a77b83;font-weight:700}
+.chapter-link strong{font-size:13px;line-height:1.25;color:#e9e0db;font-weight:600}
+.chapter-link b{font-size:14px;color:#a71936;text-align:right}
+.chapter-link:hover strong{color:#fff}
+.no-chapters{margin:4px 0 12px;color:#817675;font-size:12px;line-height:1.5}
+@media(max-width:650px){
+  .chapter-toggle{font-size:10px;padding:11px 0}
+  .chapter-link{grid-template-columns:58px 1fr 16px;gap:6px;padding:9px 0}
+  .chapter-link span{font-size:7px}
+  .chapter-link strong{font-size:11px}
+  .chapter-link b{font-size:12px}
+}
