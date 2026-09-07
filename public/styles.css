@@ -943,20 +943,65 @@ footer{
   }
 }
 
-/* FINAL HERO COVER SIZE FIX */
-.hero-cover-side{width:min(360px,100%)}
-.hero-cover-stage{min-height:500px}
-.cover-track{width:min(270px,68vw);height:405px}
-.cover-track.ready{min-height:405px}
-@media(max-width:900px){
-  .hero-cover-side{width:min(300px,86vw)}
-  .hero-cover-stage{min-height:430px}
-  .cover-track{width:min(250px,68vw);height:375px}
-  .cover-track.ready{min-height:375px}
+/* FINAL FEATURED COVER SIZE — SMALL, ELEGANT, HERO REMAINS LARGE */
+@media(min-width:901px){
+  .hero-cover-side{
+    width:100% !important;
+    height:100% !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+  }
+  .hero-cover-stage{
+    width:100% !important;
+    height:100% !important;
+    min-height:0 !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+  }
+  .cover-track,
+  .cover-track.ready{
+    position:relative !important;
+    width:300px !important;
+    height:450px !important;
+    min-height:450px !important;
+    margin:0 auto !important;
+    flex:none !important;
+  }
+  .featured-cover{
+    width:300px !important;
+    height:450px !important;
+    inset:0 !important;
+    border:1px solid rgba(202,154,91,.28) !important;
+    box-shadow:0 28px 70px rgba(0,0,0,.55),0 0 55px rgba(122,17,39,.18) !important;
+  }
+  .featured-cover img{
+    width:100% !important;
+    height:100% !important;
+    object-fit:cover !important;
+  }
 }
+
+@media(min-width:651px) and (max-width:900px){
+  .hero-cover-side{width:100% !important;}
+  .hero-cover-stage{min-height:430px !important;display:flex !important;align-items:center !important;justify-content:center !important;}
+  .cover-track,.cover-track.ready{
+    width:250px !important;
+    height:375px !important;
+    min-height:375px !important;
+    margin:0 auto !important;
+  }
+  .featured-cover{width:250px !important;height:375px !important;}
+}
+
 @media(max-width:650px){
-  .hero-cover-side{width:min(260px,80vw)}
-  .hero-cover-stage{min-height:390px}
-  .cover-track{width:min(220px,65vw);height:330px}
-  .cover-track.ready{min-height:330px}
+  .hero-cover-stage{min-height:360px !important;display:flex !important;align-items:center !important;justify-content:center !important;}
+  .cover-track,.cover-track.ready{
+    width:210px !important;
+    height:315px !important;
+    min-height:315px !important;
+    margin:0 auto !important;
+  }
+  .featured-cover{width:210px !important;height:315px !important;}
 }
