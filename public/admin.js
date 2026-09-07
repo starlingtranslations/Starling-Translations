@@ -1,4 +1,4 @@
-const $ = id => document.getElementById(id);
+ const $ = id => document.getElementById(id);
 let novels = [];
 
 async function api(url, opts = {}) {
