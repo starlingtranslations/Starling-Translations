@@ -98,8 +98,7 @@ function coverData(file) {
 function publicNovel(row) {
   return {
     ...row,
-    genres: row.genres ? row.genres.split(',').map(x => x.trim()).filter(Boolean) : [],
-    chapters: Array.isArray(row.chapters) ? row.chapters : []
+    genres: row.genres ? row.genres.split(',').map(x => x.trim()).filter(Boolean) : []
   };
 }
 
@@ -119,66 +118,22 @@ async function initDb() {
     )
   `);
 
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS chapters (
-      id SERIAL PRIMARY KEY,
-      novel_id INTEGER NOT NULL REFERENCES novels(id) ON DELETE CASCADE,
-      chapter_number INTEGER NOT NULL,
-      title TEXT NOT NULL,
-      patreon_url TEXT NOT NULL,
-      created_at TIMESTAMPTZ DEFAULT NOW(),
-      updated_at TIMESTAMPTZ DEFAULT NOW(),
-      UNIQUE(novel_id, chapter_number)
-    )
-  `);
 }
 
-async function getNovelsWithChapters() {
-  const { rows } = await pool.query(`
-    SELECT
-      n.*,
-      COALESCE(
-        (
-          SELECT json_agg(
-            json_build_object(
-              'id', c.id,
-              'chapter_number', c.chapter_number,
-              'title', c.title,
-              'patreon_url', c.patreon_url
-            ) ORDER BY c.chapter_number ASC
-          )
-          FROM chapters c
-          WHERE c.novel_id = n.id
-        ),
-        '[]'::json
-      ) AS chapters
-    FROM novels n
-    ORDER BY n.id DESC
-  `);
+async function getNovels() {
+  const { rows } = await pool.query('SELECT * FROM novels ORDER BY id DESC');
   return rows.map(publicNovel);
 }
 
 app.get('/api/novels', async (_, res) => {
   try {
-    res.json(await getNovelsWithChapters());
+    res.json(await getNovels());
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Unable to load novels.' });
   }
 });
 
-app.get('/api/novels/:id/chapters', async (req, res) => {
-  try {
-    const { rows } = await pool.query(
-      'SELECT id, novel_id, chapter_number, title, patreon_url FROM chapters WHERE novel_id=$1 ORDER BY chapter_number ASC',
-      [req.params.id]
-    );
-    res.json(rows);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Unable to load chapters.' });
-  }
-});
 
 app.get('/api/auth/status', (req, res) => {
   const admin = currentAdmin(req);
@@ -268,62 +223,6 @@ app.delete('/api/novels/:id', auth, async (req, res) => {
   }
 });
 
-app.post('/api/novels/:id/chapters', auth, async (req, res) => {
-  try {
-    const { chapter_number, title, patreon_url } = req.body || {};
-    const number = Number(chapter_number);
-    if (!Number.isInteger(number) || number < 1 || !title?.trim() || !validUrl(patreon_url)) {
-      return res.status(400).json({ error: 'Chapter number, title and a valid Patreon URL are required.' });
-    }
-
-    const novel = await pool.query('SELECT id FROM novels WHERE id=$1', [req.params.id]);
-    if (!novel.rowCount) return res.status(404).json({ error: 'Novel not found.' });
-
-    const { rows } = await pool.query(
-      `INSERT INTO chapters(novel_id, chapter_number, title, patreon_url)
-       VALUES($1,$2,$3,$4) RETURNING id, novel_id, chapter_number, title, patreon_url`,
-      [req.params.id, number, title.trim(), patreon_url.trim()]
-    );
-    res.json({ ok: true, chapter: rows[0] });
-  } catch (error) {
-    console.error(error);
-    if (error.code === '23505') return res.status(409).json({ error: 'That chapter number already exists for this novel.' });
-    res.status(500).json({ error: 'Unable to create chapter.' });
-  }
-});
-
-app.put('/api/chapters/:id', auth, async (req, res) => {
-  try {
-    const { chapter_number, title, patreon_url } = req.body || {};
-    const number = Number(chapter_number);
-    if (!Number.isInteger(number) || number < 1 || !title?.trim() || !validUrl(patreon_url)) {
-      return res.status(400).json({ error: 'Chapter number, title and a valid Patreon URL are required.' });
-    }
-
-    const { rows } = await pool.query(
-      `UPDATE chapters SET chapter_number=$1, title=$2, patreon_url=$3, updated_at=NOW()
-       WHERE id=$4 RETURNING id, novel_id, chapter_number, title, patreon_url`,
-      [number, title.trim(), patreon_url.trim(), req.params.id]
-    );
-    if (!rows[0]) return res.status(404).json({ error: 'Chapter not found.' });
-    res.json({ ok: true, chapter: rows[0] });
-  } catch (error) {
-    console.error(error);
-    if (error.code === '23505') return res.status(409).json({ error: 'That chapter number already exists for this novel.' });
-    res.status(500).json({ error: 'Unable to update chapter.' });
-  }
-});
-
-app.delete('/api/chapters/:id', auth, async (req, res) => {
-  try {
-    const result = await pool.query('DELETE FROM chapters WHERE id=$1', [req.params.id]);
-    if (!result.rowCount) return res.status(404).json({ error: 'Chapter not found.' });
-    res.json({ ok: true });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Unable to delete chapter.' });
-  }
-});
 
 initDb()
   .then(() => app.listen(PORT, () => console.log(`Starling Translations running on port ${PORT}`)))
