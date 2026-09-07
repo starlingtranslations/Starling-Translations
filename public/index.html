@@ -955,6 +955,93 @@ footer{
   }
 }
 
+
+/* FINAL FEATURED COVER SIZE FIX — HERO TEXT UNCHANGED */
+@media (min-width:901px){
+  .hero-cover-side{
+    width:100% !important;
+    height:100% !important;
+    justify-self:stretch !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+  }
+  .hero-cover-stage{
+    width:100% !important;
+    height:100% !important;
+    min-height:0 !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+  }
+  #featuredTrack.cover-track,
+  #featuredTrack.cover-track.ready,
+  #featuredTrack.hero-cover-track{
+    width:380px !important;
+    height:570px !important;
+    min-height:570px !important;
+    max-width:380px !important;
+    max-height:570px !important;
+    flex:0 0 380px !important;
+    margin:0 auto !important;
+    position:relative !important;
+  }
+  #featuredTrack .featured-cover{
+    width:380px !important;
+    height:570px !important;
+    max-width:380px !important;
+    max-height:570px !important;
+    inset:0 !important;
+    position:absolute !important;
+    border:1px solid rgba(202,154,91,.28) !important;
+    box-shadow:0 28px 70px rgba(0,0,0,.55),0 0 55px rgba(122,17,39,.18) !important;
+  }
+  #featuredTrack .featured-cover:before{display:none !important}
+  #featuredTrack .featured-cover img{
+    width:100% !important;
+    height:100% !important;
+    object-fit:cover !important;
+  }
+}
+
+@media (min-width:651px) and (max-width:900px){
+  #featuredTrack.cover-track,
+  #featuredTrack.cover-track.ready,
+  #featuredTrack.hero-cover-track{
+    width:300px !important;
+    height:450px !important;
+    min-height:450px !important;
+    max-width:300px !important;
+    max-height:450px !important;
+  }
+  #featuredTrack .featured-cover{
+    width:300px !important;
+    height:450px !important;
+    max-width:300px !important;
+    max-height:450px !important;
+  }
+  #featuredTrack .featured-cover:before{display:none !important}
+}
+
+@media (max-width:650px){
+  #featuredTrack.cover-track,
+  #featuredTrack.cover-track.ready,
+  #featuredTrack.hero-cover-track{
+    width:230px !important;
+    height:345px !important;
+    min-height:345px !important;
+    max-width:230px !important;
+    max-height:345px !important;
+  }
+  #featuredTrack .featured-cover{
+    width:230px !important;
+    height:345px !important;
+    max-width:230px !important;
+    max-height:345px !important;
+  }
+  #featuredTrack .featured-cover:before{display:none !important}
+}
+
 </style>
 </head>
 <body>
