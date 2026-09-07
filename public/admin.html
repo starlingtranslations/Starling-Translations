@@ -71,6 +71,37 @@
     </form>
   </div>
 </div>
+
+<div id="chapterModal" class="modal" hidden>
+  <div class="modal-box chapter-manager">
+    <div class="modal-head">
+      <div>
+        <p class="eyebrow">CHAPTER MANAGEMENT</p>
+        <h2 id="chapterModalTitle">Chapters</h2>
+      </div>
+      <button id="chapterClose" type="button">×</button>
+    </div>
+
+    <form id="chapterForm" class="chapter-form">
+      <input type="hidden" id="chapterId">
+      <input type="hidden" id="chapterNovelId">
+      <label>Chapter Number<input id="chapterNumber" type="number" min="1" step="1" required placeholder="1"></label>
+      <label>Chapter Title<input id="chapterTitle" required placeholder="Chapter 1"></label>
+      <label>Patreon Link<input id="chapterPatreon" type="url" required placeholder="https://www.patreon.com/posts/..."></label>
+      <p id="chapterFormError" class="error"></p>
+      <div class="chapter-form-actions">
+        <button class="save" type="submit" id="chapterSave">ADD CHAPTER</button>
+        <button class="cancel-btn" type="button" id="chapterCancel" hidden>CANCEL EDIT</button>
+      </div>
+    </form>
+
+    <div class="chapter-list-head">
+      <h3>Chapters</h3>
+      <span id="chapterCount">0 chapters</span>
+    </div>
+    <div id="chapterList" class="chapter-list"></div>
+  </div>
+</div>
 <script src="admin.js"></script>
 </body>
 </html>
