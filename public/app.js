@@ -148,12 +148,38 @@ function renderNovels(){
 
         <p class="desc">${esc(n.synopsis || 'A translated story waiting to be discovered.')}</p>
 
+        <div class="chapter-section">
+          <button class="chapter-toggle" type="button" aria-expanded="false">
+            <span>CHAPTERS</span><b>${(n.chapters || []).length}</b><i>⌄</i>
+          </button>
+          <div class="chapter-links" hidden>
+            ${(n.chapters || []).length
+              ? (n.chapters || []).map(ch => `
+                <a class="chapter-link" href="${esc(ch.patreon_url || '#')}" target="_blank" rel="noopener noreferrer">
+                  <span>CHAPTER ${esc(ch.chapter_number)}</span>
+                  <strong>${esc(ch.title || `Chapter ${ch.chapter_number}`)}</strong>
+                  <b>↗</b>
+                </a>`).join('')
+              : '<p class="no-chapters">Chapters will be added soon.</p>'}
+          </div>
+        </div>
+
         <a class="check" href="${esc(n.patreon_url || '#')}" target="_blank" rel="noopener noreferrer">
           <span>CHECK IT OUT</span><b>↗</b>
         </a>
       </div>
     </article>`;
   }).join('');
+
+  grid.querySelectorAll('.chapter-toggle').forEach(button => {
+    button.addEventListener('click', () => {
+      const links = button.nextElementSibling;
+      const open = !links.hidden;
+      links.hidden = open;
+      button.setAttribute('aria-expanded', String(!open));
+      button.classList.toggle('open', !open);
+    });
+  });
 
   requestAnimationFrame(() => {
     grid.querySelectorAll('.card').forEach(card => card.classList.add('is-visible'));
