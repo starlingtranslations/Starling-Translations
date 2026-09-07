@@ -160,7 +160,6 @@ function renderNovels(){
           ? `<img class="cover" src="${n.cover}" alt="${esc(n.title)} cover" loading="lazy">`
           : '<div class="placeholder"><span>✦</span></div>'}
         <div class="cover-shine"></div>
-        <div class="cover-badge">${esc(n.status || 'ONGOING')}</div>
       </div>
 
       <div class="card-body">
@@ -221,7 +220,6 @@ function showFeaturedCovers(){
        rel="noopener noreferrer"
        title="${esc(n.title)}">
       <img src="${n.cover}" alt="${esc(n.title)} cover">
-      <span class="featured-status">${esc(n.status || 'ONGOING')}</span>
       <span class="featured-title">${esc(n.title)}</span>
     </a>
   `).join('');
