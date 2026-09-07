@@ -1,165 +1,222 @@
-const $ = id => document.getElementById(id);
-let novels = [];
 
-async function api(url, opts = {}) {
-  const response = await fetch(url, {
-    ...opts,
-    credentials: 'same-origin'
+function setupMobileMenu(){
+  const toggle = document.getElementById('mobileMenuToggle');
+  const menu = document.getElementById('mobileMenu');
+  if(!toggle || !menu) return;
+
+  const closeMenu = () => {
+    menu.classList.remove('open');
+    toggle.setAttribute('aria-expanded','false');
+    menu.setAttribute('aria-hidden','true');
+  };
+
+  toggle.addEventListener('click', () => {
+    const open = menu.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', String(open));
+    menu.setAttribute('aria-hidden', String(!open));
   });
 
-  const data = await response.json().catch(() => ({}));
-
-  if (!response.ok) {
-    if (response.status === 401) {
-      showLogin();
-    }
-    throw new Error(data.error || 'Request failed');
-  }
-
-  return data;
+  menu.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
 }
 
-function showLogin() {
-  $('login').hidden = false;
-  $('dashboard').hidden = true;
-  $('modal').hidden = true;
-}
+let allNovels = [];
+let selectedGenre = 'ALL';
+let coverTimer = null;
 
-async function boot() {
-  try {
-    const status = await api('/api/auth/status');
-    if (status.loggedIn) {
-      showDash(status.username);
-    } else {
-      showLogin();
-    }
-  } catch {
-    showLogin();
+async function loadNovels(){
+  const grid = document.getElementById('novelGrid');
+  const track = document.getElementById('featuredTrack');
+
+  try{
+    const res = await fetch('/api/novels', {cache:'no-store'});
+    if(!res.ok) throw new Error('Unable to load novels');
+
+    allNovels = await res.json();
+
+    buildGenreButtons();
+    setupSearch();
+    showFeaturedCovers();
+    renderNovels();
+  }catch(error){
+    grid.innerHTML = '<div class="loading empty-state"><div class="empty-star">!</div><h3>The library is resting.</h3><p>Please refresh the page and try again.</p></div>';
+    track.innerHTML = '<div class="featured-empty">Please refresh to open the collection.</div>';
   }
 }
 
-$('loginForm').addEventListener('submit', async event => {
-  event.preventDefault();
-  $('loginError').textContent = '';
+function buildGenreButtons(){
+  const box = document.getElementById('genreButtons');
 
-  try {
-    const result = await api('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        username: $('username').value.trim(),
-        password: $('password').value
-      })
+  const genres = [...new Set(
+    allNovels
+      .flatMap(n => Array.isArray(n.genres) ? n.genres : [])
+      .map(g => String(g).trim())
+      .filter(Boolean)
+  )].sort((a,b) => a.localeCompare(b));
+
+  box.innerHTML = `
+    <button class="genre-btn active" type="button" data-genre="ALL">ALL</button>
+    ${genres.map(g => `
+      <button class="genre-btn" type="button" data-genre="${esc(g)}">${esc(g)}</button>
+    `).join('')}
+  `;
+
+  box.querySelectorAll('.genre-btn').forEach(button => {
+    button.addEventListener('click', () => {
+      selectedGenre = button.dataset.genre;
+      box.querySelectorAll('.genre-btn').forEach(b => b.classList.remove('active'));
+      button.classList.add('active');
+      renderNovels();
     });
-
-    showDash(result.username);
-  } catch (error) {
-    $('loginError').textContent = error.message;
-  }
-});
-
-async function showDash(username) {
-  $('login').hidden = true;
-  $('dashboard').hidden = false;
-  $('welcome').textContent = username ? `Signed in as ${username}` : '';
-  await load();
+  });
 }
 
-async function load() {
-  novels = await api('/api/novels');
+function setupSearch(){
+  const input = document.getElementById('searchInput');
+  const button = document.getElementById('searchBtn');
 
-  $('list').innerHTML =
-    novels.map(n => `
-      <div class="item">
-        <div>${n.cover ? `<img src="${n.cover}" alt="">` : '<div class="thumb">✦</div>'}</div>
-        <div>
-          <h3>${esc(n.title)}</h3>
-          <p>${esc(n.author || 'No author')} • ${esc(n.status)} • ${n.genres.map(esc).join(', ')}</p>
-        </div>
-        <div class="actions">
-          <button type="button" onclick="editNovel(${n.id})">EDIT</button>
-          <button type="button" class="del" onclick="deleteNovel(${n.id})">DELETE</button>
-        </div>
-      </div>
-    `).join('') || '<p style="color:#999">No novels yet. Add your first novel.</p>';
+  button.addEventListener('click', renderNovels);
+
+  input.addEventListener('input', renderNovels);
+
+  input.addEventListener('keydown', event => {
+    if(event.key === 'Enter'){
+      event.preventDefault();
+      renderNovels();
+    }
+  });
 }
 
-$('add').onclick = () => openModal();
-$('close').onclick = () => $('modal').hidden = true;
+function renderNovels(){
+  const grid = document.getElementById('novelGrid');
+  const count = document.getElementById('resultCount');
+  const input = document.getElementById('searchInput');
+  const query = input ? input.value.trim().toLowerCase() : '';
 
-$('logout').onclick = async () => {
-  try {
-    await api('/api/auth/logout', { method: 'POST' });
-  } finally {
-    showLogin();
-    $('username').value = '';
-    $('password').value = '';
-  }
-};
+  const filtered = allNovels.filter(n => {
+    const genres = Array.isArray(n.genres) ? n.genres : [];
 
-function openModal(n = null) {
-  $('modal').hidden = false;
-  $('modalTitle').textContent = n ? 'Edit Novel' : 'Add Novel';
-  $('novelId').value = n?.id || '';
-  $('title').value = n?.title || '';
-  $('author').value = n?.author || '';
-  $('genres').value = n?.genres?.join(', ') || '';
-  $('status').value = n?.status || 'Ongoing';
-  $('synopsis').value = n?.synopsis || '';
-  $('patreon').value = n?.patreon_url || '';
-  $('cover').value = '';
-  $('formError').textContent = '';
-}
+    const genreMatch =
+      selectedGenre === 'ALL' ||
+      genres.some(g => String(g).toLowerCase() === selectedGenre.toLowerCase());
 
-window.editNovel = id => openModal(novels.find(n => n.id === id));
+    const searchable = [
+      n.title || '',
+      n.author || '',
+      n.synopsis || '',
+      ...genres
+    ].join(' ').toLowerCase();
 
-window.deleteNovel = async id => {
-  const n = novels.find(x => x.id === id);
-  if (!n || !confirm(`Delete “${n.title}”?`)) return;
+    return genreMatch && (!query || searchable.includes(query));
+  });
 
-  try {
-    await api('/api/novels/' + id, { method: 'DELETE' });
-    await load();
-  } catch (error) {
-    alert(error.message);
-  }
-};
+  count.textContent = `${filtered.length} ${filtered.length === 1 ? 'NOVEL' : 'NOVELS'} FOUND`;
 
-$('novelForm').addEventListener('submit', async event => {
-  event.preventDefault();
-  $('formError').textContent = '';
-
-  const id = $('novelId').value;
-  const file = $('cover').files[0];
-
-  if (file && file.size > 2 * 1024 * 1024) {
-    $('formError').textContent = 'Cover image must be 2 MB or smaller.';
+  if(!filtered.length){
+    grid.innerHTML = `
+      <div class="loading empty-state">
+        <div class="empty-star">✦</div>
+        <h3>No novels found.</h3>
+        <p>Try another title, author or genre.</p>
+      </div>`;
     return;
   }
 
-  const formData = new FormData(event.target);
+  grid.innerHTML = filtered.map((n,index) => {
+    const genres = Array.isArray(n.genres) ? n.genres : [];
 
-  try {
-    await api(id ? '/api/novels/' + id : '/api/novels', {
-      method: id ? 'PUT' : 'POST',
-      body: formData
-    });
+    return `<article class="card" style="--delay:${index * 70}ms">
+      <div class="cover-wrap">
+        ${n.cover
+          ? `<img class="cover" src="${n.cover}" alt="${esc(n.title)} cover" loading="lazy">`
+          : '<div class="placeholder"><span>✦</span></div>'}
+        <div class="cover-shine"></div>
+        <div class="cover-badge">STARLING</div>
+      </div>
 
-    $('modal').hidden = true;
-    await load();
-  } catch (error) {
-    $('formError').textContent = error.message;
-  }
-});
+      <div class="card-body">
+        <div class="card-meta">
+          <span>${esc(n.status || 'ONGOING')}</span>
+          <i>✦</i>
+        </div>
 
-function esc(value = '') {
-  return String(value).replace(/[&<>'"]/g, char => ({
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    "'": '&#39;',
-    '"': '&quot;'
-  }[char]));
+        <h3>${esc(n.title)}</h3>
+        <div class="author">${esc(n.author || 'Original Author')}</div>
+
+        <div class="tags">
+          ${genres.map(g => `<span class="tag">${esc(g)}</span>`).join('')}
+        </div>
+
+        <p class="desc">${esc(n.synopsis || 'A translated story waiting to be discovered.')}</p>
+
+        <a class="check" href="${esc(n.patreon_url || '#')}" target="_blank" rel="noopener noreferrer">
+          <span>CHECK IT OUT</span><b>↗</b>
+        </a>
+      </div>
+    </article>`;
+  }).join('');
+
+  requestAnimationFrame(() => {
+    grid.querySelectorAll('.card').forEach(card => card.classList.add('is-visible'));
+  });
 }
 
-boot();
+function showFeaturedCovers(){
+  const track = document.getElementById('featuredTrack');
+
+  if(coverTimer){
+    clearInterval(coverTimer);
+    coverTimer = null;
+  }
+
+  const featured = allNovels.filter(n => n.cover);
+
+  if(!featured.length){
+    track.innerHTML = `
+      <div class="featured-cover no-cover active">
+        <span class="no-cover-mark">✦</span>
+        <span>Your next story is waiting here.</span>
+      </div>`;
+    track.classList.add('ready');
+    return;
+  }
+
+  // Random order each time the homepage is opened.
+  const shuffled = [...featured].sort(() => Math.random() - 0.5);
+
+  track.innerHTML = shuffled.map((n,index) => `
+    <a class="featured-cover${index === 0 ? ' active' : ''}"
+       href="${esc(n.patreon_url || '#')}"
+       target="_blank"
+       rel="noopener noreferrer"
+       title="${esc(n.title)}">
+      <img src="${n.cover}" alt="${esc(n.title)} cover">
+      <span>${esc(n.title)}</span>
+    </a>
+  `).join('');
+
+  const slides = [...track.querySelectorAll('.featured-cover')];
+  let current = 0;
+
+  if(slides.length > 1){
+    coverTimer = setInterval(() => {
+      slides[current].classList.remove('active');
+      current = (current + 1) % slides.length;
+      slides[current].classList.add('active');
+    }, 2000);
+  }
+
+  track.classList.add('ready');
+}
+
+function esc(value=''){
+  return String(value).replace(/[&<>'"]/g, character => ({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    "'":'&#39;',
+    '"':'&quot;'
+  }[character]));
+}
+
+setupMobileMenu();
+loadNovels();
