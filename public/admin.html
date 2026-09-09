@@ -12,29 +12,481 @@
     <link rel="stylesheet" href="admin.css">
 </head>
 
+
 <body>
 
-    <!-- =========================================
-         LOGIN
-    ========================================== -->
 
-    <section id="login" class="login">
+<!-- =====================================================
+     LOGIN SECTION
+===================================================== -->
 
-        <div class="login-box">
+<section id="login" class="login">
 
-            <div class="login-brand">
-                ✦ STARLING
-                <span>TRANSLATIONS</span>
+    <div class="login-box">
+
+        <div class="login-brand">
+            ✦ STARLING
+            <span>TRANSLATIONS</span>
+        </div>
+
+        <p class="eyebrow">
+            ADMINISTRATOR
+        </p>
+
+        <h1>
+            Welcome Back
+        </h1>
+
+        <p class="login-description">
+            Sign in to manage your novel library.
+        </p>
+
+
+        <form id="loginForm">
+
+            <div class="form-group">
+
+                <label for="username">
+                    Username
+                </label>
+
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    placeholder="Username"
+                    autocomplete="username"
+                    required
+                >
+
             </div>
 
-            <p class="eyebrow">
-                ADMINISTRATOR
+
+            <div class="form-group">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Password"
+                    autocomplete="current-password"
+                    required
+                >
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="login-button"
+            >
+                LOGIN
+            </button>
+
+
+            <p
+                id="loginError"
+                class="error"
+            ></p>
+
+        </form>
+
+
+        <a
+            href="/"
+            class="back-link"
+        >
+            ← Back to website
+        </a>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     ADMIN DASHBOARD
+===================================================== -->
+
+<section id="dashboard" hidden>
+
+
+    <!-- HEADER -->
+
+    <header class="admin-header">
+
+        <div class="admin-brand">
+
+            <span class="brand-star">
+                ✦
+            </span>
+
+            <span>
+                STARLING
+            </span>
+
+            <strong>
+                TRANSLATIONS
+            </strong>
+
+        </div>
+
+
+        <div class="admin-header-right">
+
+            <span id="welcome"></span>
+
+            <a
+                href="/"
+                class="view-website"
+            >
+                View Website
+            </a>
+
+            <button
+                id="logout"
+                type="button"
+                class="logout-button"
+            >
+                Logout
+            </button>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =================================================
+         MAIN DASHBOARD
+    ================================================== -->
+
+    <main class="admin-main">
+
+
+        <!-- PAGE TITLE + ONE ADD NOVEL BUTTON -->
+
+        <div class="dashboard-heading">
+
+            <div class="heading-text">
+
+                <p class="eyebrow">
+                    CONTENT MANAGEMENT
+                </p>
+
+                <h1>
+                    Novel Library
+                </h1>
+
+            </div>
+
+
+            <!-- ONLY ONE ADD NOVEL BUTTON -->
+
+            <button
+                id="add"
+                type="button"
+                class="add-novel-button"
+            >
+                + ADD NOVEL
+            </button>
+
+        </div>
+
+
+
+        <!-- =================================================
+             NOVEL LIST
+
+             JavaScript will insert novels here.
+             NO ADD NOVEL BUTTON HERE.
+        ================================================== -->
+
+        <div
+            id="list"
+            class="novel-list"
+        ></div>
+
+
+    </main>
+
+</section>
+
+
+
+<!-- =====================================================
+     ADD / EDIT NOVEL MODAL
+===================================================== -->
+
+<div
+    id="modal"
+    class="modal"
+    hidden
+>
+
+
+    <div class="modal-box">
+
+
+        <!-- MODAL HEADER -->
+
+        <div class="modal-header">
+
+            <div>
+
+                <p class="eyebrow">
+                    CONTENT MANAGEMENT
+                </p>
+
+                <h2 id="modalTitle">
+                    Add Novel
+                </h2>
+
+            </div>
+
+
+            <button
+                id="close"
+                type="button"
+                class="close-button"
+                aria-label="Close"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+
+        <!-- =================================================
+             NOVEL FORM
+        ================================================== -->
+
+        <form
+            id="novelForm"
+            enctype="multipart/form-data"
+        >
+
+
+            <!-- NOVEL ID -->
+
+            <input
+                type="hidden"
+                id="novelId"
+                name="id"
+            >
+
+
+
+            <!-- TITLE -->
+
+            <div class="form-group">
+
+                <label for="title">
+                    Novel Title
+                </label>
+
+                <input
+                    type="text"
+                    id="title"
+                    name="title"
+                    placeholder="Enter novel title"
+                    required
+                >
+
+            </div>
+
+
+
+            <!-- AUTHOR -->
+
+            <div class="form-group">
+
+                <label for="author">
+                    Original Author
+                </label>
+
+                <input
+                    type="text"
+                    id="author"
+                    name="author"
+                    placeholder="Enter author name"
+                >
+
+            </div>
+
+
+
+            <!-- GENRES -->
+
+            <div class="form-group">
+
+                <label for="genres">
+                    Genres
+                </label>
+
+                <input
+                    type="text"
+                    id="genres"
+                    name="genres"
+                    placeholder="Romance, Drama, Modern"
+                >
+
+                <small>
+                    Separate multiple genres with commas.
+                </small>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 STATUS
+                 
+                 Ongoing
+                 Completed
+                 Hiatus
+                 Coming Soon
+            ================================================== -->
+
+            <div class="form-group">
+
+                <label for="status">
+                    Status
+                </label>
+
+                <select
+                    id="status"
+                    name="status"
+                >
+
+                    <option value="Ongoing">
+                        Ongoing
+                    </option>
+
+                    <option value="Completed">
+                        Completed
+                    </option>
+
+                    <option value="Hiatus">
+                        Hiatus
+                    </option>
+
+                    <option value="Coming Soon">
+                        Coming Soon
+                    </option>
+
+                </select>
+
+            </div>
+
+
+
+            <!-- SYNOPSIS -->
+
+            <div class="form-group">
+
+                <label for="synopsis">
+                    Synopsis
+                </label>
+
+                <textarea
+                    id="synopsis"
+                    name="synopsis"
+                    rows="8"
+                    placeholder="Enter the full synopsis..."
+                ></textarea>
+
+            </div>
+
+
+
+            <!-- PATREON -->
+
+            <div class="form-group">
+
+                <label for="patreon">
+                    Patreon URL
+                </label>
+
+                <input
+                    type="url"
+                    id="patreon"
+                    name="patreon_url"
+                    placeholder="https://www.patreon.com/..."
+                    required
+                >
+
+            </div>
+
+
+
+            <!-- COVER -->
+
+            <div class="form-group">
+
+                <label for="cover">
+                    Cover Image
+                </label>
+
+                <input
+                    type="file"
+                    id="cover"
+                    name="cover"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                >
+
+            </div>
+
+
+
+            <p class="form-note">
+                Recommended cover format: JPG, PNG or WEBP.
             </p>
 
-            <h1>
-                Welcome Back
-            </h1>
 
+
+            <!-- FORM ERROR -->
+
+            <p
+                id="formError"
+                class="error"
+            ></p>
+
+
+
+            <!-- SAVE -->
+
+            <button
+                type="submit"
+                class="save-button"
+            >
+                SAVE NOVEL
+            </button>
+
+
+        </form>
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     ADMIN JAVASCRIPT
+===================================================== -->
+
+<script src="admin.js"></script>
+
+
+</body>
+</html>
             <p class="login-description">
                 Sign in to manage your novel library.
             </p>
