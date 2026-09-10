@@ -1050,6 +1050,19 @@ footer{
     display: none !important;
   }
 }
+/* HOT / NEW BADGES + HORIZONTAL SYNOPSIS MODAL */
+.cover-wrap .novel-badge{position:absolute;top:14px;left:14px;z-index:8;width:58px;height:58px;border-radius:50%;display:grid;place-items:center;color:#fff;font:800 11px/1 var(--sans);letter-spacing:.5px;text-transform:uppercase;box-shadow:0 8px 22px rgba(0,0,0,.28);transform:rotate(-7deg)}
+.cover-wrap .novel-badge.hot{background:#ef263f}.cover-wrap .novel-badge.new{background:#1877f2}
+.synopsis-modal[hidden]{display:none!important}.synopsis-modal{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:28px}.synopsis-modal-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(8px)}
+.synopsis-modal-box{position:relative;z-index:2;width:min(1120px,94vw);max-height:min(820px,90vh);overflow:auto;padding:30px;background:linear-gradient(145deg,#130f11,#090909);border:1px solid rgba(177,74,93,.55);box-shadow:0 35px 100px rgba(0,0,0,.72),0 0 70px rgba(100,31,43,.2);color:#f4ece7}
+.synopsis-modal-close{position:absolute;top:15px;right:19px;z-index:5;width:42px;height:42px;border:0;background:transparent;color:#d6a0aa;cursor:pointer;font:300 38px/1 Arial,sans-serif}.synopsis-modal-close:hover{color:#fff}
+.synopsis-modal-heading{margin:0 55px 24px 2px;color:#c9979e;font:700 11px var(--sans);letter-spacing:3px}.synopsis-modal-content{display:grid;grid-template-columns:minmax(230px,34%) 1fr;gap:38px;align-items:start}
+.synopsis-modal-cover-wrap{position:relative;width:min(330px,100%);margin:auto;aspect-ratio:2/3;overflow:hidden;border:1px solid rgba(202,154,91,.3);background:#100b0d;box-shadow:0 20px 55px rgba(0,0,0,.5)}.synopsis-modal-cover{width:100%;height:100%;object-fit:cover;display:block}
+.synopsis-modal-badge{position:absolute;top:15px;left:15px;z-index:3;width:60px;height:60px;border-radius:50%;display:grid;place-items:center;color:#fff;font:800 11px var(--sans);box-shadow:0 8px 20px rgba(0,0,0,.35);transform:rotate(-7deg)}.synopsis-modal-badge.hot{background:#ef263f}.synopsis-modal-badge.new{background:#1877f2}
+.synopsis-modal-info{min-width:0;padding:5px 5px 0 0}.synopsis-modal-status{color:#c9979e;font:700 10px var(--sans);letter-spacing:2px;text-transform:uppercase;margin-bottom:9px}.synopsis-modal-info h2{margin:0 0 5px;color:#f7eee9;font:600 clamp(32px,4vw,52px)/1.02 var(--serif)}.synopsis-modal-author{margin:0 0 17px;color:#b98a4a;font:600 11px var(--sans);letter-spacing:1px}.synopsis-modal-tags{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:20px}.synopsis-modal-tags .tag{border-color:rgba(173,74,94,.38);color:#c9979e;background:rgba(100,31,43,.08)}
+.synopsis-chapter-status{padding:16px 17px;margin:2px 0 20px;border:1px solid rgba(173,74,94,.3);background:rgba(22,13,16,.75)}.chapter-status-title{color:#c9979e;font:700 9px var(--sans);letter-spacing:2px;margin-bottom:12px}.chapter-status-list{display:flex;flex-wrap:wrap;gap:10px 28px}.chapter-status-list span{display:flex;align-items:baseline;gap:10px}.chapter-status-list b{color:#aaa09c;font:500 11px var(--sans)}.chapter-status-list strong{color:#f5eee9;font:700 19px var(--serif)}.chapter-coming{color:#efb1bb;font:700 12px var(--sans);letter-spacing:2px}
+.synopsis-divider{display:flex;align-items:center;gap:12px;margin:4px 0 17px}.synopsis-divider:before,.synopsis-divider:after{content:"";height:1px;flex:1;background:rgba(180,120,120,.22)}.synopsis-divider span{color:#b01d38;font-size:12px}.synopsis-full-heading{color:#c9979e;font:700 9px var(--sans);letter-spacing:2px;margin-bottom:8px}.synopsis-modal-text{max-height:270px;overflow:auto;margin:0;padding-right:10px;color:#c2b7b3;font:400 15px/1.85 var(--sans);white-space:pre-line}.synopsis-modal-text::-webkit-scrollbar{width:5px}.synopsis-modal-text::-webkit-scrollbar-thumb{background:#64202d;border-radius:10px}.synopsis-divider.bottom{margin:20px 0 16px}.synopsis-modal-actions{display:grid;grid-template-columns:1fr 180px;gap:12px}.synopsis-modal-actions .check{min-height:52px}.synopsis-close-action{border:1px solid rgba(173,74,94,.38);background:transparent;color:#d5c5c1;cursor:pointer;font:700 11px var(--sans);letter-spacing:1.8px}.synopsis-close-action:hover{background:#160d10;border-color:#9a1830;color:#fff}body.synopsis-open{overflow:hidden}
+@media(max-width:700px){.cover-wrap .novel-badge{width:43px;height:43px;top:9px;left:9px;font-size:8px}.synopsis-modal{padding:10px}.synopsis-modal-box{width:96vw;max-height:92vh;padding:20px 16px 18px}.synopsis-modal-heading{margin-bottom:16px}.synopsis-modal-content{grid-template-columns:110px 1fr;gap:15px}.synopsis-modal-cover-wrap{width:110px}.synopsis-modal-badge{width:38px;height:38px;top:7px;left:7px;font-size:7px}.synopsis-modal-info h2{font-size:25px;line-height:1.02}.synopsis-modal-author{font-size:8px;margin-bottom:10px}.synopsis-modal-tags{gap:4px;margin-bottom:12px}.synopsis-modal-tags .tag{padding:4px 5px;font-size:7px}.synopsis-chapter-status{padding:10px;margin-bottom:12px}.chapter-status-title{font-size:7px;margin-bottom:8px}.chapter-status-list{gap:5px 14px}.chapter-status-list span{gap:5px}.chapter-status-list b{font-size:8px}.chapter-status-list strong{font-size:15px}.chapter-coming{font-size:8px}.synopsis-modal-text{max-height:290px;font-size:11px;line-height:1.65}.synopsis-modal-actions{grid-template-columns:1fr;gap:8px}.synopsis-modal-actions .check,.synopsis-close-action{min-height:45px}}
 </style>
 </head>
 <body>
@@ -1149,7 +1162,41 @@ footer{
     </section>
   </main>
 
-    <footer>
+  <!-- HORIZONTAL FULL SYNOPSIS MODAL -->
+  <div id="synopsisModal" class="synopsis-modal" hidden role="dialog" aria-modal="true" aria-labelledby="synopsisModalTitle">
+    <div class="synopsis-modal-backdrop" data-synopsis-close></div>
+    <div class="synopsis-modal-box">
+      <button class="synopsis-modal-close" type="button" data-synopsis-close aria-label="Close synopsis">×</button>
+      <div class="synopsis-modal-heading">SYNOPSIS</div>
+
+      <div class="synopsis-modal-content">
+        <div class="synopsis-modal-cover-wrap">
+          <span id="synopsisModalBadge" class="synopsis-modal-badge" hidden></span>
+          <img id="synopsisModalCover" class="synopsis-modal-cover" alt="">
+        </div>
+
+        <div class="synopsis-modal-info">
+          <div id="synopsisModalStatus" class="synopsis-modal-status"></div>
+          <h2 id="synopsisModalTitle"></h2>
+          <p id="synopsisModalAuthor" class="synopsis-modal-author"></p>
+          <div id="synopsisModalTags" class="synopsis-modal-tags"></div>
+          <div id="synopsisChapterStatus" class="synopsis-chapter-status"></div>
+          <div class="synopsis-divider"><span>✦</span></div>
+          <div class="synopsis-full-heading">FULL SYNOPSIS</div>
+          <p id="synopsisModalText" class="synopsis-modal-text"></p>
+          <div class="synopsis-divider bottom"><span>✦</span></div>
+          <div class="synopsis-modal-actions">
+            <a id="synopsisModalCheck" class="check" href="#" target="_blank" rel="noopener noreferrer">
+              <span>CHECK IT OUT</span><b>↗</b>
+            </a>
+            <button class="synopsis-close-action" type="button" data-synopsis-close>CLOSE</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
     <div class="footer-brand">✦ STARLING TRANSLATIONS</div>
     <p>© 2026 Starling Translations · Stories beyond language.</p>
   </footer>
