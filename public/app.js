@@ -600,6 +600,10 @@ function renderNovels() {
 
           <div class="cover-wrap">
 
+            ${n.badge && ['HOT','NEW'].includes(String(n.badge).toUpperCase()) ? `
+              <span class="novel-badge ${String(n.badge).toLowerCase()}">${esc(String(n.badge).toUpperCase())}</span>
+            ` : ''}
+
             ${
               n.cover
 
@@ -693,39 +697,17 @@ function renderNovels() {
 
             ${
               n.synopsis
-
                 ? `
-
                   <button
                     class="synopsis-toggle"
                     type="button"
-                    aria-expanded="false"
+                    aria-label="Read full synopsis"
+                    data-id="${n.id}"
                   >
-
-                    <span>
-                      READ FULL SYNOPSIS
-                    </span>
-
-                    <b>
-                      ↓
-                    </b>
-
+                    <span>READ FULL SYNOPSIS</span>
+                    <b>↓</b>
                   </button>
-
-
-                  <div
-                    class="synopsis-full"
-                    hidden
-                  >
-
-                    ${esc(
-                      n.synopsis
-                    )}
-
-                  </div>
-
                 `
-
                 : ''
             }
 
@@ -761,68 +743,13 @@ function renderNovels() {
     .join('');
 
 
-  /* Synopsis dropdown */
-
-  grid
-    .querySelectorAll(
-      '.synopsis-toggle'
-    )
-    .forEach(button => {
-
-      button.addEventListener(
-        'click',
-        () => {
-
-          const full =
-            button.nextElementSibling;
-
-
-          const expanded =
-            button.getAttribute(
-              'aria-expanded'
-            ) === 'true';
-
-
-          button.setAttribute(
-            'aria-expanded',
-            String(!expanded)
-          );
-
-
-          full.hidden =
-            expanded;
-
-
-          button
-            .querySelector('span')
-            .textContent =
-
-              expanded
-
-                ? 'READ FULL SYNOPSIS'
-
-                : 'HIDE SYNOPSIS';
-
-
-          button
-            .querySelector('b')
-            .textContent =
-
-              expanded
-                ? '↓'
-                : '↑';
-
-
-          button.classList.toggle(
-            'open',
-            !expanded
-          );
-
-        }
-      );
-
+  /* Horizontal full synopsis popup */
+  grid.querySelectorAll('.synopsis-toggle').forEach(button => {
+    button.addEventListener('click', () => {
+      const novel = allNovels.find(n => String(n.id) === String(button.dataset.id));
+      if (novel) openSynopsisModal(novel);
     });
-
+  });
 
   requestAnimationFrame(
     () => {
@@ -847,6 +774,72 @@ function renderNovels() {
 /* =========================================
    FEATURED COVER ANIMATION
 ========================================= */
+
+function openSynopsisModal(n) {
+  const modal = document.getElementById('synopsisModal');
+  if (!modal) return;
+
+  const cover = document.getElementById('synopsisModalCover');
+  const badge = document.getElementById('synopsisModalBadge');
+  const status = document.getElementById('synopsisModalStatus');
+  const title = document.getElementById('synopsisModalTitle');
+  const author = document.getElementById('synopsisModalAuthor');
+  const tags = document.getElementById('synopsisModalTags');
+  const synopsis = document.getElementById('synopsisModalText');
+  const mainChapters = Number(n.main_chapters || 0);
+  const extraChapters = Number(n.extra_chapters || 0);
+  const chapterStatus = document.getElementById('synopsisChapterStatus');
+  const check = document.getElementById('synopsisModalCheck');
+
+  if (cover) {
+    cover.src = n.cover || '';
+    cover.alt = `${n.title || 'Novel'} cover`;
+    cover.style.display = n.cover ? 'block' : 'none';
+  }
+
+  if (badge) {
+    const value = String(n.badge || '').toUpperCase();
+    badge.textContent = value;
+    badge.className = `synopsis-modal-badge ${value ? value.toLowerCase() : ''}`;
+    badge.hidden = !value;
+  }
+
+  if (status) status.textContent = String(n.status || 'Ongoing').toUpperCase();
+  if (title) title.textContent = n.title || '';
+  if (author) author.textContent = n.author || 'Original Author';
+  if (tags) tags.innerHTML = (Array.isArray(n.genres) ? n.genres : []).map(g => `<span class="tag">${esc(g)}</span>`).join('');
+  if (synopsis) synopsis.textContent = n.synopsis || 'A translated story waiting to be discovered.';
+
+  if (chapterStatus) {
+    if (mainChapters > 0 || extraChapters > 0) {
+      chapterStatus.innerHTML = `
+        <div class="chapter-status-title">CHAPTER STATUS</div>
+        <div class="chapter-status-list">
+          ${mainChapters > 0 ? `<span><b>Main Chapters</b><strong>${mainChapters}</strong></span>` : ''}
+          ${extraChapters > 0 ? `<span><b>Extra Chapters</b><strong>${extraChapters}</strong></span>` : ''}
+        </div>
+      `;
+      chapterStatus.classList.remove('coming-soon');
+    } else {
+      chapterStatus.innerHTML = `
+        <div class="chapter-status-title">CHAPTER STATUS</div>
+        <div class="chapter-coming">COMING SOON</div>
+      `;
+      chapterStatus.classList.add('coming-soon');
+    }
+  }
+
+  if (check) check.href = n.patreon_url || '#';
+  modal.hidden = false;
+  document.body.classList.add('synopsis-open');
+}
+
+function closeSynopsisModal() {
+  const modal = document.getElementById('synopsisModal');
+  if (!modal) return;
+  modal.hidden = true;
+  document.body.classList.remove('synopsis-open');
+}
 
 function showFeaturedCovers() {
 
@@ -1043,6 +1036,17 @@ function esc(value = '') {
 }
 
 
+
+/* =========================================
+   SYNOPSIS MODAL CONTROLS
+========================================= */
+document.querySelectorAll('[data-synopsis-close]').forEach(el => {
+  el.addEventListener('click', closeSynopsisModal);
+});
+
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape') closeSynopsisModal();
+});
 
 /* =========================================
    START WEBSITE
