@@ -113,10 +113,18 @@ async function initDb() {
       synopsis TEXT DEFAULT '',
       patreon_url TEXT NOT NULL,
       cover TEXT DEFAULT '',
+      badge TEXT DEFAULT '',
+      main_chapters INTEGER DEFAULT 0,
+      extra_chapters INTEGER DEFAULT 0,
       created_at TIMESTAMPTZ DEFAULT NOW(),
       updated_at TIMESTAMPTZ DEFAULT NOW()
     )
   `);
+
+  // Add newer fields to existing installations without deleting existing data.
+  await pool.query(`ALTER TABLE novels ADD COLUMN IF NOT EXISTS badge TEXT DEFAULT ''`);
+  await pool.query(`ALTER TABLE novels ADD COLUMN IF NOT EXISTS main_chapters INTEGER DEFAULT 0`);
+  await pool.query(`ALTER TABLE novels ADD COLUMN IF NOT EXISTS extra_chapters INTEGER DEFAULT 0`);
 
 }
 
@@ -173,15 +181,19 @@ app.post('/api/auth/logout', (req, res) => {
 
 app.post('/api/novels', auth, upload.single('cover'), async (req, res) => {
   try {
-    const { title, author, genres, status, synopsis, patreon_url } = req.body;
+    const { title, author, genres, status, synopsis, patreon_url, badge, main_chapters, extra_chapters } = req.body;
     if (!title?.trim() || !validUrl(patreon_url)) {
       return res.status(400).json({ error: 'Title and a valid Patreon URL are required.' });
     }
     const cover = coverData(req.file);
+    const allowedBadges = ['', 'HOT', 'NEW'];
+    const cleanBadge = allowedBadges.includes(String(badge || '').toUpperCase()) ? String(badge || '').toUpperCase() : '';
+    const cleanMainChapters = Math.max(0, parseInt(main_chapters, 10) || 0);
+    const cleanExtraChapters = Math.max(0, parseInt(extra_chapters, 10) || 0);
     const { rows } = await pool.query(
-      `INSERT INTO novels(title,author,genres,status,synopsis,patreon_url,cover)
-       VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING id`,
-      [title.trim(), author?.trim() || '', genres || '', status || 'Ongoing', synopsis?.trim() || '', patreon_url.trim(), cover]
+      `INSERT INTO novels(title,author,genres,status,synopsis,patreon_url,cover,badge,main_chapters,extra_chapters)
+       VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING id`,
+      [title.trim(), author?.trim() || '', genres || '', status || 'Ongoing', synopsis?.trim() || '', patreon_url.trim(), cover, cleanBadge, cleanMainChapters, cleanExtraChapters]
     );
     res.json({ ok: true, id: rows[0].id });
   } catch (error) {
@@ -195,15 +207,19 @@ app.put('/api/novels/:id', auth, upload.single('cover'), async (req, res) => {
     const { rows } = await pool.query('SELECT * FROM novels WHERE id=$1', [req.params.id]);
     const old = rows[0];
     if (!old) return res.status(404).json({ error: 'Novel not found' });
-    const { title, author, genres, status, synopsis, patreon_url } = req.body;
+    const { title, author, genres, status, synopsis, patreon_url, badge, main_chapters, extra_chapters } = req.body;
     if (!title?.trim() || !validUrl(patreon_url)) {
       return res.status(400).json({ error: 'Title and a valid Patreon URL are required.' });
     }
     const cover = req.file ? coverData(req.file) : old.cover;
+    const allowedBadges = ['', 'HOT', 'NEW'];
+    const cleanBadge = allowedBadges.includes(String(badge || '').toUpperCase()) ? String(badge || '').toUpperCase() : '';
+    const cleanMainChapters = Math.max(0, parseInt(main_chapters, 10) || 0);
+    const cleanExtraChapters = Math.max(0, parseInt(extra_chapters, 10) || 0);
     await pool.query(
       `UPDATE novels SET title=$1, author=$2, genres=$3, status=$4, synopsis=$5,
-       patreon_url=$6, cover=$7, updated_at=NOW() WHERE id=$8`,
-      [title.trim(), author?.trim() || '', genres || '', status || 'Ongoing', synopsis?.trim() || '', patreon_url.trim(), cover, req.params.id]
+       patreon_url=$6, cover=$7, badge=$8, main_chapters=$9, extra_chapters=$10, updated_at=NOW() WHERE id=$11`,
+      [title.trim(), author?.trim() || '', genres || '', status || 'Ongoing', synopsis?.trim() || '', patreon_url.trim(), cover, cleanBadge, cleanMainChapters, cleanExtraChapters, req.params.id]
     );
     res.json({ ok: true });
   } catch (error) {
