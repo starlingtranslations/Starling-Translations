@@ -600,7 +600,7 @@ function renderNovels() {
 
           <div class="cover-wrap">
 
-            ${n.badge && ['HOT','NEW'].includes(String(n.badge).toUpperCase()) ? `
+            ${n.badge && ['HOT','NEW','SOON'].includes(String(n.badge).toUpperCase()) ? `
               <span class="novel-badge ${String(n.badge).toLowerCase()}">${esc(String(n.badge).toUpperCase())}</span>
             ` : ''}
 
@@ -798,7 +798,8 @@ function openSynopsisModal(n) {
   }
 
   if (badge) {
-    const value = String(n.badge || '').toUpperCase();
+    const rawValue = String(n.badge || '').toUpperCase();
+    const value = ['HOT','NEW','SOON'].includes(rawValue) ? rawValue : '';
     badge.textContent = value;
     badge.className = `synopsis-modal-badge ${value ? value.toLowerCase() : ''}`;
     badge.hidden = !value;
