@@ -186,7 +186,7 @@ app.post('/api/novels', auth, upload.single('cover'), async (req, res) => {
       return res.status(400).json({ error: 'Title and a valid Patreon URL are required.' });
     }
     const cover = coverData(req.file);
-    const allowedBadges = ['', 'HOT', 'NEW'];
+    const allowedBadges = ['', 'HOT', 'NEW', 'SOON'];
     const cleanBadge = allowedBadges.includes(String(badge || '').toUpperCase()) ? String(badge || '').toUpperCase() : '';
     const cleanMainChapters = Math.max(0, parseInt(main_chapters, 10) || 0);
     const cleanExtraChapters = Math.max(0, parseInt(extra_chapters, 10) || 0);
@@ -212,7 +212,7 @@ app.put('/api/novels/:id', auth, upload.single('cover'), async (req, res) => {
       return res.status(400).json({ error: 'Title and a valid Patreon URL are required.' });
     }
     const cover = req.file ? coverData(req.file) : old.cover;
-    const allowedBadges = ['', 'HOT', 'NEW'];
+    const allowedBadges = ['', 'HOT', 'NEW', 'SOON'];
     const cleanBadge = allowedBadges.includes(String(badge || '').toUpperCase()) ? String(badge || '').toUpperCase() : '';
     const cleanMainChapters = Math.max(0, parseInt(main_chapters, 10) || 0);
     const cleanExtraChapters = Math.max(0, parseInt(extra_chapters, 10) || 0);
